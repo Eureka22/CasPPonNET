@@ -39,9 +39,9 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 
 
-\title{Research Notes}
-%\author{KEG}
-%\date{\today}
+\title{Towards the eradication of Ebola}
+\author{Team 41523}
+\date{\today}
 \begin{document}
 	\maketitle
 	\lstset{language=Matlab,%
@@ -61,42 +61,257 @@
 	    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
 	}
 	
+\section*{Abstract}
+TBD
+
+
+
+\newpage
+
+
+\tableofcontents
+
+\newpage
+
+
+
+
 
 \section{Introduction}
 \subsection{Background}
 
-Ebola virus disease (EVD) is a lethal human and primate disease that currently requires a particular attention from the international health authorities due to important outbreaks in some Western African countries and possible spread to other continents, in fact, it has already occurred in west countries such as the USA , UK and Spain. Regarding the emergency of this situation, there is a need of development of decision tools to assist the authorities to focus their efforts in important factors to eradicate Ebola.
 
-In particular, mathematical modelling can help to predict the possible evolution of the Ebola outbreaks and to give some recommendations about how to control the situation.
 
-In this work, we propose a novel spatial and temporal model based on TBD, called TBD, to study the evolution of EVD in Sierra leone, Liberia and Guinea, which has owned the most serious situations due to their poor health care system. We use the city as the basic research object to simulate the spread of Ebola disease and identify risk zones. The main interesting Characteristics of TBD are the consideration of the migratory flux between cities and control measure effects and the use of time dependent evolution adapted to each city.
 
-First, we focus on the mathematical formulation of each component of the model. Next, in order to validate our approach, we consider various numerical experiments regarding the 2014 Ebola epidemic. In particular, we study the ability of the model in predicting the EVD until the end of the epidemic.
+The Ebola virus causes an acute, serious illness which is often fatal if untreated. 
 
-The results are compared to real data and other models outputs found in the literature. Finally, a brief parameter sensitivity analysis is done.
+The current outbreak in west Africa, (first cases notified in March 2014), is the largest and most complex Ebola outbreak since the Ebola virus was first discovered in 1976. There have been more cases and deaths in this outbreak than all others combined. 
 
-\subsection{Problem Restatement}
+The most severely affected countries, Guinea, Sierra Leone and Liberia have very weak health systems, lacking human and infrastructural resources, having only recently emerged from long periods of conflict and instability. On August 8, the WHO Director-General declared this outbreak a Public Health Emergency of International Concern.
 
-The world medical association has announced that their new medication could stop Ebola and cure patients whose disease is not advanced. Build a realistic, sensible, and useful model that considers not only the spread of the disease, the quantity of the medicine needed, possible feasible delivery systems (sending the medicine to where it is needed), (geographical) locations of delivery, speed of manufacturing of the vaccine or drug, but also any other critical factors your team considers necessary as part of the model to optimize the eradication of Ebola, or at least its current strain. In addition to your modeling approach for the contest, prepare a 1-2 page non-technical letter for the world medical association to use in their announcement.
 
-The goal of this project's core is to control the disease outbreak, on the basis of the goal, assume that the drug has a certain production capacity, we focus on delivery the drug to the city which is most needed.
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=6in]{graph/bstats.pdf}
+  \caption{General statistics of Ebola outbreak in 2014}
+  \label{stats}
+\end{center}  
+\end{figure}
 
+Fig.~\ref{stats} shows the basic statistics of the Ebola outbreak in 2014. This is the cumulative cases and deaths in the three countries where the outbreak is the severe.\footnote{The hump of the curve origin from the inconsistency of the data source, it changed on Nov 12 2014.}
+
+
+
+\subsection{Transmission}
+
+It is thought that fruit bats of the Pteropodidae family are natural Ebola virus hosts. Ebola is introduced into the human population through close contact with the blood, secretions, organs or other bodily fluids of infected animals such as chimpanzees, gorillas, fruit bats, monkeys, forest antelope and porcupines found ill or dead or in the rainforest.
+
+
+Ebola then spreads through human-to-human transmission via direct contact (through broken skin or mucous membranes) with the blood, secretions, organs or other bodily fluids of infected people, and with surfaces and materials (e.g. bedding, clothing) contaminated with these fluids.
+
+It is reported that \cite{merler2015spatiotemporal}, 72\%  of infections occurred in households or in the general community , 17.5\% in hospitals, and 10.4\% at funerals. This observation is important for our modelling.
+
+Human-to-human transmission gives rise to the wide spread such disease. It has spread between countries starting in Guinea then spreading across land borders to Sierra Leone and Liberia, by air (1 traveller only) to Nigeria, and by land (1 traveller) to Senegal.
+
+Figure.~\ref{cities} shows the location of Ebola infected areas. We also got the geological location and other information such as population for the purpose of model calibration.
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=6in]{graph/map3.pdf}
+  \caption{Location of Ebola infected cities}
+  \label{cities}
+\end{center}  
+\end{figure}
+
+From observing the outbreak data in Fig.~\ref{spread}, we found there exists a correlation  between infected areas in time. This observation validated that Ebola spread between countries on the land.
+
+\begin{figure}%[hbt]
+\begin{center}
+  \includegraphics[width=6.1in]{graph/spread.pdf}
+  \caption{Spread of Ebola disease}
+  \label{spread}
+\end{center}  
+\end{figure}
+
+\subsection{Medication}
+
+Supportive care-rehydration with oral or intravenous fluids- and treatment of specific symptoms, improves survival. There is as yet no proven treatment available for EVD. However, a range of potential treatments including blood products, immune therapies and drug therapies are currently being evaluated. No licensed vaccines are available yet, but 2 potential vaccines are undergoing human safety testing.
+
+In the modelling, we assume medicine and vaccines are found for treating Ebola.
+
+
+\section{Problem Formulation}
+
+\subsection{Problem restatement}
+
+The world medical association has announced that their new medication could stop Ebola and cure patients whose disease is not advanced. 
+
+The ultimate goal is to bring Ebola under control. To achieve this goal, a sensible model has to be built, taking not only the spread of the disease, the quantity of the medicine needed, possible feasible delivery systems, locations of delivery, speed of manufacturing of the vaccine or drug into consideration. Then use this model to optimize the eradication of Ebola.
+
+It is natural to break this problem into two parts, the first part focuses on the Ebola itself. For this part, we need to build a model to describe how Ebola spreads and progresses. 
+
+The second part is to build an optimization model to optimize the eradication of Ebola based on the intrinsic properties of Ebola. 
+\subsection{Challenges}
+
+Previous research focuses on the statistical level of disease modelling, thus detailed plan is not easily made from that. So it is challenging to build a fine grind model to assist detailed area-level healthcare plan-making.
+
+The second challenge lies in the spread of disease. Many a time only one traveller from one area to another will cause infection and disease spread in that new area. Traditional statistical models views the population in as a whole, thus they are not able to track this phenomenon. The challenge is to view different areas as a network and consider the effect of population migration.
+
+
+\section{Disease Modelling}
 
 \subsection{Assumptions}
 
-Based on the background of the Ebola virus, the spread of disease only consider the interpersonal communication. So we only focus on the population flow effect on the spread of the disease. We have established a network based on geographical location, the spread of the disease is considered as the network segment.
+TBD
+
+\subsection{Network Building}
+
+The Ebola infected countries are divided into areas based on its
+ political divisions. We denote the areas as nodes, $N_i$. And there exists links between every two nodes. We assign a weight $\sigma_{i,j}$ on each edge to describe the `proximity' of two areas. 
+ 
+Because we mainly consider the population flow, so we adopted the gravity model\cite{anderson2010gravity}\cite{karemera2000gravity} in economics to estimate the population flow between to areas.
+
+$$\sigma_{i,j} = \frac{Po_i^{\beta_1}Po_j^{\beta_2}}{d_{i,j}^{\beta_3}}, i \neq j$$
+
+We denote the population of node $i$ as $Po_i$ and the geological distance between node $i$ and node $j$. For simplification, we set:
+
+$$\beta_1 = 1, \beta_2 = 1, \beta_3 = 2$$
+
+And to calculate the distance between to nodes, we simply used the euclidean distance between two nodes.
+
+We fetched the data of 55 infected areas. The link and the strength of links is visualized in \ref{network}, and the area of circles stands for the population.
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/network2.pdf}
+  \caption{Underlying network of population flow}
+  \label{network}
+\end{center}  
+\end{figure}
+
+\subsection{Differential equation model on the network}
+
+We proposed an assisted model based on the network structure and an assisted traditional SIR model.
+
+Other assumptions have to be made. We classify the people into one of the following states:
 
 \begin{itemize}
-
-\item	Lattice point in the network on behalf of each city, there are two directed line segment between different cities, represents the spread of disease is a two-way flow\item	The population of each city is already known\item	Infections caused by migration between cities, the population flow between cities is positive correlation with their population, and negative correlation with the distance between them. City whether belong to the same countries or not also affects the population movement.\item	In our work, we don’t consider the virus variation. At the same time, We don't intend to distinguish different Ebola virus subtype.
-
-
-
+    \item S: Suspected, not infected but possible for infections
+    \item I: Infected, but not go to hospital
+    \item H: Infected, and in hospital
+    \item R: Removed, recovered or passed away
 \end{itemize}
-\section{Cascaded Poisson Process}
+
+For simplification, we assume the ratio of death or recover is constant and can be observed from statistical data.
+
+\subsubsection{Differential Equation model without considering population flow}
+
+$N$ denotes for the whole population. Because there are three main causes of infection, \emph{household transmission, clinical transmission, and funeral transmission}.
+
+So the rate is proportional to three terms, corresponding to the three causes.
+
+$$\frac{\mathrm{d}S}{\mathrm{d}t} = -\frac{\beta_1 S I}{N}-\frac{\beta_3 S H}{N}  - \frac{\beta_2 S }{N} \frac{\mathrm{d}D}{\mathrm{d}t} $$ 
+
+
+$$\frac{\mathrm{d}I}{\mathrm{d}t} = \frac{\beta_1 S I}{N} +\frac{\beta_3 S H}{N}  + \frac{\beta_2 S }{N} \frac{\mathrm{d}D}{\mathrm{d}t} - kI$$ 
+
+$$\frac{\mathrm{d}H}{\mathrm{d}t} = kI - \gamma H$$
+
+$$\frac{\mathrm{d}R}{\mathrm{d}t} = \gamma H$$
+Because the ratio of death or recover is constant and can be observed from statistical data,so 
+$$D =\eta R. $$
+
+\subsubsection{Differential Equation model with considering population flow}
+
+The underlying network is the main dynamic of disease sprawling. 
+
+For every node $V_i \in V$
+
+$$\frac{\mathrm{d}S_i}{\mathrm{d}t} = -\frac{\beta_1 S_i I_i}{N_i}-\frac{\beta_3 S_i H_i}{N_i}  - \frac{\beta_2 S_i }{N_i} \frac{\mathrm{d}D_i}{\mathrm{d}t} + \sum_{j\in V,j\neq i} \theta(\sigma_{i,j} S_j - \sigma_{j,i} S_i) $$ 
+
+
+$$\frac{\mathrm{d}I_i}{\mathrm{d}t} = \frac{\beta_1 S_i I_i}{N_i} +\frac{\beta_3 S_i H_i}{N_i}  + \frac{\beta_2 S_i }{N_i} \frac{\mathrm{d}D_i}{\mathrm{d}t} - kI_i + \sum_{j\in V,j\neq i} \theta(\sigma_{i,j} I_j - \sigma_{j,i} I_i)$$ 
+
+$$\frac{\mathrm{d}H_i}{\mathrm{d}t} = kI_i - \gamma H_i$$
+
+$$\frac{\mathrm{d}R_i}{\mathrm{d}t} = \gamma H_i$$
+Because the ratio of death or recover is constant and can be observed from statistical data,so 
+$$D_i =\eta R_i. $$
+
+
+
+
+\subsubsection{Two step model calibration}
+The first step of calibration is to determine the parameters for the overall data.
+
+The parameters are $\beta_1,\beta_2,\beta_3, k,\gamma$.
+
+Write the equations in matrix form.
+$$\vec{x} =  \begin{pmatrix}
+S\\I\\H
+ \end{pmatrix}$$ 
+ 
+ $$
+ A =  \begin{pmatrix}
+0 &-\beta_1 & -\beta_3-\beta_2\eta\gamma \\
+0 &\beta_1 -k & \beta_3 + \beta_\eta\gamma \\
+0 & k & -\gamma 
+ \end{pmatrix}
+ $$
+ 
+ Considering the number infected is small comparing to the population. So $$S_i \approx N_i, \frac{\mathrm{d}S_i}{\mathrm{d}t} \approx 0$$
+ 
+ $$\dot{\vec{x}} =  A  \vec{x}$$
+ 
+ The roots of equation $|pI-A| = 0$ are:
+ 
+ $$
+ p_1 = 0
+ $$
+ 
+ $$
+ p_{2,3} = \frac{-k+\beta_1 - \gamma + \sqrt{  (\beta_1 - \gamma - k)^2  - 4(\beta_1 - \gamma - mk + k\gamma) } }{2}
+ $$
+ 
+ 
+ The general solution is 
+$$\psi = A\begin{pmatrix}
+1\\0\\0
+ \end{pmatrix}
+ +B\begin{pmatrix}
+-m\frac{p_2 + k}{p_2}\\ m \\ p_2 - \beta_1 + k
+ \end{pmatrix}
+ +C\begin{pmatrix}
+-m\frac{p_3 + k}{p_3}\\ m \\ p_3- \beta_1 + k
+ \end{pmatrix}
+$$
+
+
+From statistical data we set $\beta_1:\beta_2:\beta_3 = 2:2:1$
+ 
+So $$\psi = B\frac{7}{6}\beta(1+\frac{1}{6.3(\beta - 0.163+\sqrt{\beta^2 + 0.193\beta})}) e^{(\beta - 0.163+\sqrt{\beta^2 + 0.193\beta})t}$$
+ 
+ 
+We fit the data to the first $2/3$ data and get $\beta = ?$ TBD
+
+The second step of calibration considered the population flow.
+
+TBD
+
+$$\theta = 1.4\times 10^{-9}$$
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/est.pdf}
+  \caption{Estimated $\theta$}
+  \label{est}
+\end{center}  
+\end{figure}
+
+\subsection{Cascaded Poisson Process Model}
+\subsubsection{Proposed model}
 Multi-dimensional Hawkes process\cite{zhou2013learning} are used to model repeated events and influence between people. It provided inspiration for us to model the infections of disease as a inhomogeneous Poisson Process to track the temporal and spatial behaviour of disease transmissions.
 
-From Fig.~\ref{new} we can see the new infections, we model the new infections as a diffusion process. We consider the diffusion process using discrete time steps.
+From Fig.~\ref{spread} we can see the new infections, we model the new infections as a diffusion process. We consider the diffusion process using discrete time steps.
 
 One person being infected is a point process, so viewing it from a higher level, the infection is a Poisson Process.
 
@@ -105,16 +320,7 @@ The intensity of the Poisson Process is related to many factors.
 The intensity in one city/area depends on two parts, one part comes from itself, and the second part comes from all other cities. 
 
 
-$$\sigma_{i,j} = \frac{Po_i^{\beta_1}Po_j^{\beta_2}}{d_{i,j}^{\beta_3}}$$
 
-
-For simplification, we set:
-
-$$\beta_1 = 1, \beta_2 = 1, \beta_3 = 2$$
-
-TBD cite:gravity model
-
-$\sigma$ is defined as the distance between two cities, and the distance from a city to itself is the unit distance. 
 
 $$\mu_{i,t_k} = \lambda_1 \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-1-t)} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-1-t)}$$
 
@@ -166,42 +372,14 @@ $$\lambda_2^* = \lambda_2 - \gamma \frac{\partial \log L(\lambda_1, \lambda_2)}{
 
 $\gamma$ is the step size.
 
+We get $\beta$ from statistical data. $$\beta = 0.05$$ 
 
 
+\section{Disease Controlling}
+
+\section*{Appendix}
 
 
-\section{Plots}
-
-
-\begin{figure}[hbt]
-\begin{center}
-  \includegraphics[width=6in]{graph/map2.pdf}
-  \caption{Location of Ebola infected cities}
-\end{center}  
-\end{figure}
-
-\begin{figure}[hbt]
-\begin{center}
-  \includegraphics[width=2in]{graph/evlvo.pdf}
-  \caption{Progress of Ebola outbreak}
-\end{center}  
-\end{figure}
-
-\begin{figure}[hbt]
-\begin{center}
-  \includegraphics[width=2in]{graph/new2.pdf}
-  \caption{New infections of Ebola outbreak}
-  \label{new}
-\end{center}  
-\end{figure}
-
-
-\begin{figure}[hbt]
-\begin{center}
-  \includegraphics[width=6in]{graph/stats.pdf}
-  \caption{General statistics of Ebola outbreak}
-\end{center}  
-\end{figure}
 
 \bibliography{ref}
 \bibliographystyle{ieeetr}
