@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 \usepackage{setspace}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -61,8 +61,8 @@
 	    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
 	}
 	
-\section*{Abstract}
-TBD
+%\section*{Abstract}
+%TBD
 
 
 
@@ -111,7 +111,7 @@ Ebola then spreads through human-to-human transmission via direct contact (throu
 
 It is reported that \cite{merler2015spatiotemporal}, 72\%  of infections occurred in households or in the general community , 17.5\% in hospitals, and 10.4\% at funerals. This observation is important for our modelling.
 
-Human-to-human transmission gives rise to the wide spread such disease. It has spread between countries starting in Guinea then spreading across land borders to Sierra Leone and Liberia, by air (1 traveller only) to Nigeria, and by land (1 traveller) to Senegal.
+Human-to-human transmission gives rise to the wide spread such disease. It has spread between countries starting in Guinea then spreading across land borders to Sierra Leone and Liberia, by air (1 traveller only) to Nigeria, and by land (1 traveller) to Senegal.\cite{ebolanew}
 
 Figure.~\ref{cities} shows the location of Ebola infected areas. We also got the geological location and other information such as population for the purpose of model calibration.
 
@@ -123,15 +123,9 @@ Figure.~\ref{cities} shows the location of Ebola infected areas. We also got the
 \end{center}  
 \end{figure}
 
-From observing the outbreak data in Fig.~\ref{spread}, we found there exists a correlation  between infected areas in time. This observation validated that Ebola spread between countries on the land.
+From observing the outbreak data in Fig.~\ref{spread} in Appendix , we found there exists a correlation  between infected areas in time. This observation validated that Ebola spread between countries on the land.
 
-\begin{figure}%[hbt]
-\begin{center}
-  \includegraphics[width=6.1in]{graph/spread2.pdf}
-  \caption{Spread of Ebola disease}
-  \label{spread}
-\end{center}  
-\end{figure}
+
 
 \subsection{Medication}
 
@@ -155,9 +149,9 @@ It is natural to break this problem into two parts, the first part focuses on th
 The second part is to build an optimization model to optimize the eradication of Ebola based on the intrinsic properties of Ebola. 
 \subsection{Challenges}
 
-Previous research focuses on the statistical level of disease modelling, thus detailed plan is not easily made from that. So it is challenging to build a fine grind model to assist detailed area-level healthcare plan-making.
+Previous research focuses on the statistical level of disease modelling\cite{anderson1992infectious}\cite{lekone2006statistical}\cite{ivorra2014codis}\cite{team2014ebola}\cite{chowell2014transmission}   , thus detailed plan is not easily made from that. So it is challenging to build a fine grind model to assist detailed area-level healthcare plan-making.
 
-The second challenge lies in the spread of disease. Many a time only one traveller from one area to another will cause infection and disease spread in that new area. Traditional statistical models views the population in as a whole, thus they are not able to track this phenomenon. The challenge is to view different areas as a network and consider the effect of population migration.
+The second challenge lies in the spread of disease. Many a time only one traveller from one area to another will cause infection and disease spread in that new area. Traditional statistical models views the population in as a whole, thus they are not able to track this phenomenon. The challenge is to view different areas as a network and consider the effect of population migration\cite{basharpredicting} .
 
 
 \section{Disease Modelling}
@@ -185,7 +179,7 @@ We fetched the data of 55 infected areas. The link and the strength of links is 
 
 \begin{figure}[hbt]
 \begin{center}
-  \includegraphics[width=4in]{graph/network2.pdf}
+  \includegraphics[width=5in]{graph/network2.pdf}
   \caption{Underlying network of population flow}
   \label{network}
 \end{center}  
@@ -294,24 +288,59 @@ From statistical data we set $\beta_1:\beta_2:\beta_3 = 2:2:1$
 So $$\psi = B\frac{7}{6}\beta(1+\frac{1}{6.3(\beta - 0.163+\sqrt{\beta^2 + 0.193\beta})}) e^{(\beta - 0.163+\sqrt{\beta^2 + 0.193\beta})t}$$
  
  
-We fit the data to the first $2/3$ data and get $\beta = ?$ TBD
+We fit the data to the first $2/3$ data and get $$\beta = 0.0612$$ in Fig.~\ref{cfit}.
 
-The second step of calibration considered the population flow.
-
-TBD
-
-$$\theta = 1.4\times 10^{-9}$$
 \begin{figure}[hbt]
 \begin{center}
-  \includegraphics[width=4in]{graph/est.pdf}
+  \includegraphics[width=5in]{graph/cfit.pdf}
+  \caption{Estimate parameter $\beta$ }
+  \label{cfit}
+\end{center}  
+\end{figure}
+
+
+
+
+The second step of calibration considered the population flow. During the calibration, data of different times at different nodes is used as our initial conditions and after our simulation, we can obtain the prediction for new cases after a fixed time period. And the norm of prediction error can thus be gotten. Thus the best fitted theta can be considered as the one that make the prediction error smallest. The relationship between error and theta can be show as:We can see that the best theta is about $$\theta = 0.3 \times 10^{-3}$$
+
+Since $\theta$ is such a key parameter which we can conduct the influence ratio between node itself and its neighbourhood, we now give a short discussion. From the right side of second differential equation, we express the influence ratio as
+
+$$
+\frac{\sigma_{i,j} I_i}{\beta_1 \frac{S_i I_i}{N_i} } ＝ =  \frac{\theta \sigma_{i,j} N_i}{\beta_1 S_i}
+$$
+
+We can estimate the ratio because we konw:
+
+$$
+\sigma_{i,j} \sim 10^0, N_i \sim S_i, \beta \sim 10^{-2}, \theta \sim 10^{-3}
+$$Thus the ratio is about $10^{-1}$, meaning that the influence given by a node itself is about $10^1$ times stronger than that obtained from its neighbours.
+
+TBD
+(You can mention the concordance in your model later.)
+
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/est3.pdf}
   \caption{Estimated $\theta$}
   \label{est}
 \end{center}  
 \end{figure}
 
+\label{eth}
+
+\subsubsection{Model Analysis}
+
+During our modeling process using SIHRonNet model, some weakness of these differential model has been exposed clearly, which can be summarized in three aspects:
+\begin{itemize}
+\item	Bad Timescale:SIHR model does make sense to describe the entire process of a disease outbreak, but its description to the beginning of an outbreak is trivial---- an exponential-like increase can’t give us the detailed information we want.  \item	No Randomness:In theses models, all the interactions between different states of people is modeled using a proportional relationship, meaning that the model is based on statics. This erases the randomness, which is an unique characteristic at the beginning of an outbreak.\item	Parameter-based: A lot of parameters are involved in SIHRonNET model making it a hard work to calibrate each of them precisely and even impossible considering the change of parameters with the evolution of time.
+
+\end{itemize}
+Above all, though we can still use SIHRonNET model to estimate some trend of the evolution of the illness, a much more timescale-matched, random and parameter-free model is needed to tell us exactly how to eradicate Ebola. 
+
 \subsection{Cascaded Poisson Process Model}
 \subsubsection{Proposed model}
-Multi-dimensional Hawkes process\cite{zhou2013learning} are used to model repeated events and influence between people. It provided inspiration for us to model the infections of disease as a inhomogeneous Poisson Process to track the temporal and spatial behaviour of disease transmissions.
+Multi-dimensional Hawkes process\cite{zhou2013learning}\cite{iwata2013discovering} are used to model repeated events and influence between people. It provided inspiration for us to model the infections of disease as a inhomogeneous Poisson Process to track the temporal and spatial behaviour of disease transmissions.
 
 From Fig.~\ref{spread} we can see the new infections, we model the new infections as a diffusion process. We consider the diffusion process using discrete time steps.
 
@@ -390,13 +419,74 @@ We set the step size $\gamma = 1\times 10^{-7}$ and started experiments from ini
 
 After $400$ iterations, $\lambda_1$ and $\lambda_2$ converge to $0.2136$ and $0.01134$.
 
+$\sigma_{i,j} \sim 10^0$
+
+So $\lambda_1 : \lambda_2 \sigma_{i,j} \sim 10^1$, this is consistent with the result in Section~\ref{eth}.
+
 \subsection{Model Validation}
 
+\subsubsection{Validate the model with observed data}
 We use the estimated $\lambda_1$ and $\lambda_2$ to do the estimation of Ebola outbreak for every time step(2 weeks) based on historical data. Fig.~\ref{espread} shows the result of the estimation. The estimated values match well with the ground truth, thus, our model is valid.
+
+\subsubsection{Validate the model with case study}
+In the previous section, we showed our model fits very well with the data. Thus, our model is good at tracking the progress of the disease in one area. 
+
+Apart from that, our model has strong predictive abilities because it is built on the network.
+
+We obtained the real data to estimate which areas are prone to be transmitted.
+
+We did a case study on the prediction of our model. 
+
+For example, from observing the data till week 7 since the outbreak, our model produced prediction that there will be outbreak in Freetown and Port Loko. Then in week 8, those two areas are infected indeed. Moreover, the news\cite{ebolanew} confirmed that the outbreak of Ebola in Freetown and Port Loko is due to transmission from adjacent areas.
+
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=6in]{graph/est22.pdf}
+  \caption{Estimated outbreak in Freetown and Port Loko}
+  \label{est22}
+\end{center}  
+\end{figure}
+
+
+\subsubsection{Validate by comparing two models}
+
 
 \subsection{Model Analysis}
 
-TBD
+\subsubsection{Sensitivity analysis}
+
+To 
+
+
+
+
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/roc.pdf}
+  \caption{ROC of prediction}
+  \label{roc}
+\end{center}  
+\end{figure}
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/acc.pdf}
+  \caption{Accuracy of prediction}
+  \label{acc}
+\end{center}  
+\end{figure}
+
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/fmeasure.pdf}
+  \caption{F-measure of prediction}
+  \label{fm}
+\end{center}  
+\end{figure}
+
 
 \begin{figure}%[hbt]
 \begin{center}
@@ -432,6 +522,7 @@ For different perspectives in Problem $1$ and $2$, either proposed disease sprea
 
 \subsection{Disease Controlling based on Cascaded Poisson Process Model}
 
+\label{str}
 The mechanism of medicine on a patient $P$ : If the disease is not advanced (less than $T_0$), $P$ is recovered and removed from the system. And $P$ will not have any effects on the next time step.
 
 We set $T_0$ to two weeks. 
@@ -444,6 +535,8 @@ $$\mu_{i,t_k} = \lambda_1 \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-m)\Delta t} 
 
 Denote $C_{i,t_m}$ is the number of patients cured in area $i$ and time step $m$, $C_{i,t_m} \leq P_{i,t_m}$.
 
+$$\sum_i C_{i,t_m} = C_{t_m}$$
+
 $$\mu'_{i,t_k} = \lambda_1 \sum_{m = 1}^{ k-1} (P_{i,t_m} - C_{i,t_m}) e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} (P_{j,t_m}-C_{i,t_m}) \sigma_{j,i} e^{-\beta(k-m)\Delta t}$$
 
 $$
@@ -453,7 +546,7 @@ $$
 \lambda_1 \sum_n \sum_{m = 1}^{ k-1} (P_{i,t_m} - C_{i,t_m}) e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_n \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} (P_{j,t_m} - C_{i,t_m}) \sigma_{j,i} e^{-\beta(k-m)\Delta t}
 $$
 
-The coefficient of $C_{i,t_m}$ is $\lambda_1 e^{-\beta(k-m)} + \lambda_2 \sum_{j:j\neq i} e^{-\beta(k-m) }$
+The coefficient of $C_{i,t_m}$ is $\lambda_1 e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_{j:j\neq i} e^{-\beta(k-m) \Delta t}$
 
 Strategy: 
 
@@ -465,7 +558,7 @@ In this case, the weight of areas is only related to $\sum_{j:j\neq i} \sigma_{j
 
 If the observation window is smaller, for example $\Delta t = \frac{1}{u} T_0$, then patients in last $u$ time steps can be cured. 
 
-$$w_{c,i,m} = \lambda_1 e^{-\beta(k-m)} + \lambda_2 \sum_{j:j\neq i} e^{-\beta(k-m) }, k-u\leq m < k$$
+$$w_{c,i,m} = \lambda_1 e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_{j:j\neq i} e^{-\beta(k-m) \Delta t}, k-u\leq m < k$$
 
 
 TBD
@@ -473,9 +566,12 @@ TBD
 
 Vaccination:
 
-The vaccination is applied to a number of citizens in a certain area $i$ at a certain time $t_m$, then they are immune to Ebola in the future $t,t>t_m$.
+The vaccination is applied to a number of citizens in a certain area $i$ at a certain time $t_m$, then they are immune to Ebola in the future $t,t>t_m$. 
 
 $$Va_{i,t_m} = \delta Po_i $$
+$$\sum_i Va_{i,t_m} = Va_{t_m} $$
+ 
+
 Then 
 $$\mu'_{i,t_k} =(1 - \delta) \mu_{i,t_k} , k > m $$ 
 
@@ -495,14 +591,95 @@ $$
 
 
 
-\subsection{Experimental validation}
+\subsubsection{Experimental validation}
 
+We adopted the strategy in Section \ref{str} to test their effects on disease controlling.
+
+We tested the proposed method against other trivial methods such as assign medicine proportional to number of new cases and showed our method is optimal.
+
+If the number of medicine is fixed, it can be inferred from Figure.\ref{med} that no matter how much the amount of the drug is, our strategy is always the best.
+
+In Figure.~\ref{ev}, we tested the proposed vaccination method against other general methods such as assign vaccine proportional to number of new cases and showed our method is optimal.
+
+We can draw a conclusion from Figure.~\ref{med2} that when the amount of vaccine is a constant number.On the scale of the amount, our proposed vaccination method is better than other methods.
+
+
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/res2.pdf}
+  \caption{Effect of different medication strategies}
+  \label{med}
+\end{center}  
+\end{figure}
+
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/ev.pdf}
+  \caption{Effect of different medication strategies over time}
+  \label{ev}
+\end{center}  
+\end{figure}
+
+
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/res4.pdf}
+  \caption{Effect of different vaccination strategies}
+  \label{med2}
+\end{center}  
+\end{figure}
+
+
+
+\begin{figure}%[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/ev2.pdf}
+  \caption{Effect of different vaccination strategies over time}
+  \label{ev2}
+\end{center}  
+\end{figure}
+
+
+
+\subsection{Disease Precautioning System}
+
+
+
+
+\begin{figure}%[hbt]
+\begin{center}
+  \includegraphics[width=4in]{graph/cost.pdf}
+  \caption{Comparison to random prediction}
+  \label{random}
+\end{center}  
+\end{figure}
+
+
+
+\newpage
+\bibliography{ref}
+\bibliographystyle{ieeetr}
+
+
+\newpage
 
 
 \section*{Appendix}
+\label{appendix}
+Some large figures are plotted in this section.
+
+\begin{figure}%[hbt]
+\begin{center}
+  \includegraphics[width=6.1in]{graph/spread2.pdf}
+  \caption{Spread of Ebola disease}
+  \label{spread}
+\end{center}  
+\end{figure}
 
 
 
-\bibliography{ref}
-\bibliographystyle{ieeetr}
+
 \end{document}
