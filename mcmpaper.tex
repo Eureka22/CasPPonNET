@@ -117,7 +117,7 @@ Figure.~\ref{cities} shows the location of Ebola infected areas. We also got the
 
 \begin{figure}[hbt]
 \begin{center}
-  \includegraphics[width=6in]{graph/map3.pdf}
+  \includegraphics[width=6in]{graph/map3.png}
   \caption{Location of Ebola infected cities}
   \label{cities}
 \end{center}  
@@ -127,7 +127,7 @@ From observing the outbreak data in Fig.~\ref{spread}, we found there exists a c
 
 \begin{figure}%[hbt]
 \begin{center}
-  \includegraphics[width=6.1in]{graph/spread.pdf}
+  \includegraphics[width=6.1in]{graph/spread2.pdf}
   \caption{Spread of Ebola disease}
   \label{spread}
 \end{center}  
@@ -141,6 +141,8 @@ In the modelling, we assume medicine and vaccines are found for treating Ebola.
 
 
 \section{Problem Formulation}
+
+
 
 \subsection{Problem restatement}
 
@@ -159,7 +161,7 @@ The second challenge lies in the spread of disease. Many a time only one travell
 
 
 \section{Disease Modelling}
-
+\label{dmodel}
 \subsection{Assumptions}
 
 TBD
@@ -322,7 +324,9 @@ The intensity in one city/area depends on two parts, one part comes from itself,
 
 
 
-$$\mu_{i,t_k} = \lambda_1 \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-1-t)} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-1-t)}$$
+$$\mu_{i,t_k} = \lambda_1 \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-m)\Delta t }$$
+
+\subsubsection{Model Calibration}
 
 We do a MLE to fit the data to the model and get $\lambda_1$ and $\lambda_2$.
 
@@ -349,19 +353,19 @@ $$
 Solve for equation 1:
 
 $$
-\frac{\partial \log L(\lambda_1, \lambda_2)}{\partial \lambda_1} = \sum_{i \in V} \sum_{k}\left[ { \frac{P_{i,t_k}\sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-1-t)}}{ \lambda_1 \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-1-t)} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-1-t)}}} \right.
+\frac{\partial \log L(\lambda_1, \lambda_2)}{\partial \lambda_1} = \sum_{i \in V} \sum_{k}\left[ { \frac{P_{i,t_k}\sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-m)\Delta t}}{ \lambda_1 \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-m)\Delta t}}} \right.
 $$
 $$
-\left. {- \left( \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-1-t)} \right)\Delta t} \right] 
+\left. {- \left( \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-m)\Delta t} \right)\Delta t} \right] 
 $$
 
 solve for equation 2:
 
 $$
-\frac{\partial \log L(\lambda_1, \lambda_2)}{\partial \lambda_2} = \sum_{i \in V} \sum_{k}\left[ { \frac{P_{i,t_k}\sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-1-t)} }{ \lambda_1 \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-1-t)} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-1-t)}}} \right.
+\frac{\partial \log L(\lambda_1, \lambda_2)}{\partial \lambda_2} = \sum_{i \in V} \sum_{k}\left[ { \frac{P_{i,t_k}\sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-m)\Delta t} }{ \lambda_1 \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-m)\Delta t}}} \right.
 $$
 $$
-\left. {- \left( \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-1-t)} \right)\Delta t} \right] 
+\left. {- \left( \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-m)\Delta t} \right)\Delta t} \right] 
 $$
 
 All the terms are positive. So use gradient descent to find the solution.
@@ -372,10 +376,128 @@ $$\lambda_2^* = \lambda_2 - \gamma \frac{\partial \log L(\lambda_1, \lambda_2)}{
 
 $\gamma$ is the step size.
 
-We get $\beta$ from statistical data. $$\beta = 0.05$$ 
+We get $\beta$ from statistical data. $$\beta = 0.1$$ 
+
+We set the step size $\gamma = 1\times 10^{-7}$ and started experiments from initial value $\lambda_1 = 0.6$ and $\lambda_2 = 0.01$.
+
+\begin{figure}[hbt]
+\begin{center}
+  \includegraphics[width=6in]{graph/iter.pdf}
+  \caption{Estimated $\lambda_1$ and $\lambda_2$}
+  \label{est2}
+\end{center}  
+\end{figure}
+
+After $400$ iterations, $\lambda_1$ and $\lambda_2$ converge to $0.2136$ and $0.01134$.
+
+\subsection{Model Validation}
+
+We use the estimated $\lambda_1$ and $\lambda_2$ to do the estimation of Ebola outbreak for every time step(2 weeks) based on historical data. Fig.~\ref{espread} shows the result of the estimation. The estimated values match well with the ground truth, thus, our model is valid.
+
+\subsection{Model Analysis}
+
+TBD
+
+\begin{figure}%[hbt]
+\begin{center}
+  \includegraphics[width=1in]{graph/elabel.pdf}
+
+  \includegraphics[width=5.9 in]{graph/ee.pdf}
+  \caption{Estimated spatiotemporal spread of Ebola. The red marker means the ground truth and the blue marker means the estimated value. And the area of the circle means the scale of the outbreak. For the well estimated outbreaks, the two colors mix to make purple.}
+  \label{espread}
+\end{center}  
+\end{figure}
 
 
 \section{Disease Controlling}
+
+\subsection{Objective}
+We break the control of the disease into two steps with considering different factors. 
+
+The first step is two temporarily bring the ebola under control. We formalize this problem as following:
+
+\emph{Problem~1}
+
+Given the Ebola spread models in Section~\ref{dmodel}, and a certain medication model $M$, with the current situation $P_{j,t_m}, j \in V, t_m \leq T$. Propose the best allocation of medicine, to minimize the loss $L(T')$ at time $T'$, $T' > T'$, and determine the impact of important factors to the disease controlling process.
+
+
+\emph{Problem~2}
+
+The second step is to ultimately eliminate the Ebola disease from the earth. This goal is formalized as following:
+
+Given the Ebola spread models in Section~\ref{dmodel}, and a certain medication model $M$, with the current situation $P_{j,t_m}, j \in V, t_m \leq T$. Propose the best allocation of medicine, to minimize the cumulative loss $\int_{T}^{\infty} L(t) dt $, and determine the critical factors having effect on whether   the disease can be eliminated, i.e, $\text{lim}_{t\rightarrow \infty} L(t) = 0 $
+
+For different perspectives in Problem $1$ and $2$, either proposed disease spreading model has advantages, so we will use the most suitable model for  analysing different tasks in those problems.
+
+
+\subsection{Disease Controlling based on Cascaded Poisson Process Model}
+
+The mechanism of medicine on a patient $P$ : If the disease is not advanced (less than $T_0$), $P$ is recovered and removed from the system. And $P$ will not have any effects on the next time step.
+
+We set $T_0$ to two weeks. 
+
+If the observation window is long, for example if $\Delta t= T_0$, then only patients in last time step can be cured.
+
+Assume we have $m$ amount of medicines for $m$ patients. And we want to maximize the effect of these medicines.
+
+$$\mu_{i,t_k} = \lambda_1 \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-m)\Delta t}$$
+
+Denote $C_{i,t_m}$ is the number of patients cured in area $i$ and time step $m$, $C_{i,t_m} \leq P_{i,t_m}$.
+
+$$\mu'_{i,t_k} = \lambda_1 \sum_{m = 1}^{ k-1} (P_{i,t_m} - C_{i,t_m}) e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} (P_{j,t_m}-C_{i,t_m}) \sigma_{j,i} e^{-\beta(k-m)\Delta t}$$
+
+$$
+E[\sum_n {P'_{n,t_k}}] = \sum_i \mu'_{i,t_k} = \lambda_1 \sum_n \sum_{m = 1}^{ k-1} P'_{i,t_m} e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_n \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P'_{j,t_m} \sigma_{j,i} e^{-\beta(k-m)\Delta t}
+$$
+$$
+\lambda_1 \sum_n \sum_{m = 1}^{ k-1} (P_{i,t_m} - C_{i,t_m}) e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_n \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} (P_{j,t_m} - C_{i,t_m}) \sigma_{j,i} e^{-\beta(k-m)\Delta t}
+$$
+
+The coefficient of $C_{i,t_m}$ is $\lambda_1 e^{-\beta(k-m)} + \lambda_2 \sum_{j:j\neq i} e^{-\beta(k-m) }$
+
+Strategy: 
+
+find the node with the max weight:
+ $$w_{c,i} = \lambda_1 + \lambda_2 \sum_{j:j\neq i} \sigma_{j,i}$$
+ 
+In this case, the weight of areas is only related to $\sum_{j:j\neq i} \sigma_{j,i}$.
+
+
+If the observation window is smaller, for example $\Delta t = \frac{1}{u} T_0$, then patients in last $u$ time steps can be cured. 
+
+$$w_{c,i,m} = \lambda_1 e^{-\beta(k-m)} + \lambda_2 \sum_{j:j\neq i} e^{-\beta(k-m) }, k-u\leq m < k$$
+
+
+TBD
+
+
+Vaccination:
+
+The vaccination is applied to a number of citizens in a certain area $i$ at a certain time $t_m$, then they are immune to Ebola in the future $t,t>t_m$.
+
+$$Va_{i,t_m} = \delta Po_i $$
+Then 
+$$\mu'_{i,t_k} =(1 - \delta) \mu_{i,t_k} , k > m $$ 
+
+
+$$
+E[\sum_{i \in n} {P'_{n,t_k}}] = \sum_{i \in n} \mu'_{i,t_k} = \lambda_1 \sum_{i \in n} \left( 1 - \frac{Va_{i,t_{ < k}}}{Po_i} \right) \sum_{m = 1}^{ k-1} P_{i,t_m} e^{-\beta(k-m)\Delta t} $$
+$$ + \lambda_2 \sum_{i \in n}\left( 1 - \frac{Va_{i,t_{< k}}}{Po_i}\right) \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} P_{j,t_m} \sigma_{j,i} e^{-\beta(k-m)\Delta t}
+$$
+
+The benefit from $Va_{i,t_{ < k}}$ is:
+
+$$
+w_{v,i} = \lambda_1 \sum_{m = 1}^{ k-1} \frac{P_{i,t_m}}{Po_{i}} e^{-\beta(k-m)\Delta t} + \lambda_2 \sum_{j:j\neq i} \sum_{m = 1}^{ k-1} \frac{P_{j,t_m}}{Po_{i}} \sigma_{j,i} e^{-\beta(k-m)\Delta t} = \frac{E[P_{i,t_k}]}{Po_{i}}
+$$
+
+
+
+
+
+\subsection{Experimental validation}
+
+
 
 \section*{Appendix}
 
